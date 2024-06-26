@@ -15,7 +15,7 @@ function Header() {
     <div className='w-full bg-secondary shadow-md'>
       <div className='max-w-screen-xl mx-auto flex p-4 items-center justify-between'>
         <Image src={'/logo.svg'} width={60} height={20} alt='logo' />
-        <ul className='flex gap-6'>
+        <ul className=' hidden:md flex gap-6'>
           <li className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${path === '/dashboard' && 'text-primary font-bold'}`}>Dashboard</li>
           <li className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${path === '/dashboard/questions' && 'text-primary font-bold'}`}>Questions</li>
           <li className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${path === '/dashboard/upgrade' && 'text-primary font-bold'}`}>Upgrade</li>
