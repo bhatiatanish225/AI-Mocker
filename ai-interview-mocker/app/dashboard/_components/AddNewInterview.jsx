@@ -7,6 +7,13 @@ import { Dialog, DialogOverlay, DialogContent, DialogClose, DialogTitle, DialogD
 import { ChatSession } from '@google/generative-ai';
 import{chatSession} from "/utils/GemniAiModel.js"
 import { Loader2, LoaderCircle } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
+import { useUser } from '@clerk/nextjs';
+import moment from 'moment';
+import {db} from '/utils/db.js'
+import{MockInterview} from '/utils/schema.js'
+
+
 
 
 
@@ -17,7 +24,10 @@ function AddNewInterview() {
   const [jobPosition,setJobPosition]=useState();
   const [jobDesc,setJobDesc]=useState();
   const [jobExperience,setjobExperience]=useState();
-  const [loading,setLoading]=useState(false)
+  const [loading,setLoading]=useState(false);
+  const[jsonResponse,setJsonResponse]=useState([]);
+  const {user}=useUser();
+
 
 
   const handleSubmit = async(event) => {
@@ -33,8 +43,45 @@ function AddNewInterview() {
     const result=await chatSession.sendMessage(InputPrompt);
 	const MockJsonResponse=(result.response.text()).replace('```json','').replace('```','')
 	console.log(JSON.parse(MockJsonResponse));
-	setLoading(false);
-  };
+
+  
+  setJsonResponse(MockJsonResponse);
+	
+
+  if(MockJsonResponse){
+    
+  const resp=await db.insert(MockInterview)
+  .values({
+    mockId:uuidv4(),
+    jsonMockResp:MockJsonResponse,
+    jobPosition:jobPosition,
+    jobDesc:jobDesc,
+    jobExperience:jobExperience,
+    createdBy:user?.primaryEmailAddress?.emailAddress,
+    createdAt:moment().format('DD-MM-yyyy')
+
+  
+  }).returning({mockId:MockInterview.mockId})
+
+  console.log("Inserted Id:",resp);
+  if(resp){
+    setOpenDialog(false);
+  }
+
+}
+else{
+  console.log("ERROR!!");
+}
+
+
+
+
+
+setLoading(false);
+  }
+  
+
+
 
   return (
     <div className='max-w-xl'>
