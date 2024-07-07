@@ -4,12 +4,13 @@ import { db } from "/utils/db.js";
 import { MockInterview } from "/utils/schema.js";
 import { eq } from "drizzle-orm";
 import Webcam from "react-webcam";
-import { WebcamIcon } from "lucide-react";
+import { Webcam as WebcamIcon } from "lucide-react";
 import Link from 'next/link';
 
 function Interview({ params }) {
   const [interviewData, setInterviewData] = useState(null);
   const [webCamEnabled, setWebCamEnabled] = useState(false);
+  const [webCamError, setWebCamError] = useState(null);
 
   useEffect(() => {
     console.log(params.interviewId);
@@ -23,6 +24,21 @@ function Interview({ params }) {
       .where(eq(MockInterview.mockId, params.interviewId));
 
     setInterviewData(result[0]);
+  };
+
+  const handleEnableWebCam = () => {
+    setWebCamEnabled(true);
+  };
+
+  const handleUserMediaError = (error) => {
+    console.error("Webcam error: ", error);
+    setWebCamError(error.message);
+  };
+
+  const videoConstraints = {
+    width: 1280,
+    height: 720,
+    facingMode: "user"
   };
 
   return (
@@ -40,7 +56,6 @@ function Interview({ params }) {
                 It has 5 questions which you can answer and at the last, you will get the report 
                 based on your answers.
               </p>
-              {/* Add more instructions as needed */}
             </div>
 
             {/* Job Information Section */}
@@ -65,10 +80,11 @@ function Interview({ params }) {
             <div className="flex justify-center items-center">
               {webCamEnabled ? (
                 <Webcam
-                  onUserMedia={() => setWebCamEnabled(true)}
-                  onUserMediaError={() => setWebCamEnabled(false)}
+                  audio={false}
                   mirrored={true}
+                  videoConstraints={videoConstraints}
                   className="w-96 h-96 md:w-[30rem] md:h-[30rem]"
+                  onUserMediaError={handleUserMediaError}
                 />
               ) : (
                 <WebcamIcon className="h-96 w-96 my-7 p-20 bg-secondary rounded-lg border" />
@@ -76,7 +92,7 @@ function Interview({ params }) {
             </div>
             {!webCamEnabled && (
               <button
-                onClick={() => setWebCamEnabled(true)}
+                onClick={handleEnableWebCam}
                 className="relative inline-flex items-center justify-center p-0.5 mb-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 mt-auto"
                 style={{ minWidth: "200px" }}
               >
@@ -85,6 +101,7 @@ function Interview({ params }) {
                 </span>
               </button>
             )}
+            {webCamError && <p className="text-red-500 mt-4">{webCamError}</p>}
           </div>
         </div>
         <div className="mt-10 text-center">

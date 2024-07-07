@@ -4,6 +4,7 @@ import { db } from "/utils/db.js";
 import { MockInterview } from "/utils/schema.js";
 import { eq } from "drizzle-orm";
 import QuestionsSection from "./_components/QuestionsSection";
+import RecordAnsSection from "./_components/RecordAnsSection";
 
 function Start({ params }) {
   const [interviewData, setInterviewData] = useState(null);
@@ -41,6 +42,7 @@ function Start({ params }) {
     />
 
     {/* vides/audio recording  */}
+   
 		
 
 	</div>
