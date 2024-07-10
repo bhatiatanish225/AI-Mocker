@@ -33,7 +33,7 @@ function Start({ params }) {
   }, [params.interviewId]);
 
   return <div>
-	<div className="grid grid-cols-1 md:grid-cols-2">
+	<div className="grid grid-cols-1 md:grid-cols-2 my-10">
     {/* Questions */}
     <QuestionsSection
      mockInterviewQuestion={mockInterviewQuestion}
@@ -42,6 +42,7 @@ function Start({ params }) {
     />
 
     {/* vides/audio recording  */}
+    <RecordAnsSection/>
    
 		
 

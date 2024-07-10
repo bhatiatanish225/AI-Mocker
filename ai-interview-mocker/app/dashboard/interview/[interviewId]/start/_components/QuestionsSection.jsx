@@ -1,6 +1,17 @@
+import { Volume2 } from 'lucide-react';
 import React from 'react';
 
 function QuestionsSection({ mockInterviewQuestion, activeQuestionIndex }) {
+
+  const textToSpeach=(text)=>{
+    if('speechSynthesis'in window){
+      const speech =new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(speech)
+    }
+    else{
+      alert('sorry your browser does not support this feature')
+    }
+  }
   return (
     mockInterviewQuestion && (
       <div className="p-5 border rounded-lg my-10 bg-white shadow-md">
@@ -21,6 +32,7 @@ function QuestionsSection({ mockInterviewQuestion, activeQuestionIndex }) {
         <h2 className="my-5 text-lg md:text-lg text-gray-800 ">
           {mockInterviewQuestion[activeQuestionIndex]?.question}
         </h2>
+        <Volume2 className='cursor-pointer' onClick={()=>textToSpeach(mockInterviewQuestion[activeQuestionIndex]?.question)}/>
         <div className="border rounded-lg p-5 bg-blue-100 my-10 shadow-sm mt-20">
           <h2 className="flex gap-2 items-center">
             <strong>NOTE:</strong>
