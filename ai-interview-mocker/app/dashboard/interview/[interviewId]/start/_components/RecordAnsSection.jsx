@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import useSpeechToText from "react-hook-speech-to-text";
+import{chatSession} from "/utils/GemniAiModel.js"
 
 function RecordAnsSection({ mockInterviewQuestion, activeQuestionIndex }) {
   const [isSpeechRecognitionSupported, setIsSpeechRecognitionSupported] =
@@ -47,32 +48,26 @@ function RecordAnsSection({ mockInterviewQuestion, activeQuestionIndex }) {
     console.error("Speech-to-text error:", error);
   }
 
-  const SaveUserResponse = async() => {
+  const SaveUserResponse = async () => {
     if (isRecording) {
       stopSpeechToText();
       // Save the response when recording stops
       const combinedTranscripts = transcripts.join(" ");
-      if (combinedTranscripts.length < 10) {
-        setWarning(
-          "Your answer is too short. Please record your answer again."
-        );
-        setUserAns("");
+      setUserAns(combinedTranscripts);
+      setWarning("");
 
-        const feedbackPrompt =
-          "Question:" +
-          mockInterviewQuestion[activeQuestionIndex]?.question +
-          ", User Answer:" +
-          results +
-          ",Depends on question and user answer for give interview question" +
-          "Please give us rating for ans and feedback as area of improvment if any " +
-          "in just 3-5 lines to imporve it in JSON format with rating field and feedback field";
-          const result =await chatSession.sendMessage(feedbackPrompt);
-          const mockjsonResp=(result.response.text()).replace('```json','').replace('```','');
-          console.log(mockjsonResp)
-      } else {
-        setUserAns(combinedTranscripts);
-        setWarning("");
-      }
+      const feedbackPrompt =
+        "Question:" +
+        mockInterviewQuestion[activeQuestionIndex]?.question +
+        ", User Answer:" +
+        results +
+        ",Depends on question and user answer for give interview question" +
+        "Please give us rating for ans and feedback as area of improvment if any " +
+        "in just 3-5 lines to imporve it in JSON format with rating field and feedback field";
+      const result = await chatSession.sendMessage(feedbackPrompt);
+      const mockjsonResp = (result.response.text()).replace('```json', '').replace('```', '');
+      console.log(mockjsonResp);
+      const JsonFeedbackResp=Json.parse(mockjsonResp);
     } else {
       startSpeechToText();
     }
